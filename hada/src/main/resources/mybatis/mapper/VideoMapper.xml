@@ -7,10 +7,11 @@
 	</select>
 	
 	<insert id="insertVideoUrl" parameterType="com.hada.api.model.Video">
-		INSERT INTO video
-			(cno, url)
-			VALUES
-			(#{cno}, #{url})
+		INSERT INTO 
+			video
+			SET
+				cno = #{cno}
+			,	url = #{url}
 	</insert>
 	
 	<delete id="deleteVideoUrl" parameterType="Integer">
