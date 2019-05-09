@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hada.api.mapper.ChallengeMapper">
+
+	<select id="selectChallengeList" parameterType="String" resultType="com.hada.api.model.Challenge">
+		SELECT * FROM challenge WHERE req_email = #{email} OR res_email = #{email}
+	</select>
+	
+	<select id="selectChallengeDetail" parameterType="int" resultType="com.hada.api.model.Challenge">
+		SELECT * FROM challenge WHERE cno = #{cno}
+	</select>
+	
+	<insert id="insertChallengeDetail" parameterType="com.hada.api.model.Challenge">
+		INSERT INTO
+			challenge
+	    SET
+			req_email = #{req_email}
+		,	res_email = #{res_email}
+	    ,	stt_dt = STR_TO_DATE(#{stt_dt}, '%Y-%m-%d')
+		,	end_dt = STR_TO_DATE(#{end_dt}, '%Y-%m-%d')
+	    ,	days = #{days}
+	    , 	stt_tm = TIME(#{stt_tm})
+	    ,	min_tm = #{min_tm}
+	    ,	bet_title = #{bet_title}
+	    ,	state = #{state}
+	    ,	created = now()
+	</insert>
+	
+	<update id="updateChallengeDetail" parameterType="com.hada.api.model.Challenge">
+		UPDATE challenge
+		<trim prefix="SET" prefixOverrides=",">
+		    <if test="req_email!=null and !req_email.equals('')">
+			,	req_email = #{req_email}
+			</if>
+			<if test="res_email!=null and !res_email.equals('')">
+		    ,	res_email = #{res_email}
+			</if>
+			<if test="stt_dt!=null and !stt_dt.equals('')">
+		    ,	stt_dt = STR_TO_DATE(#{stt_dt}, '%Y-%m-%d')
+			</if>
+			<if test="end_dt!=null and !end_dt.equals('')">
+		    ,	end_dt = STR_TO_DATE(#{end_dt}, '%Y-%m-%d')
+			</if>
+			<if test="days!=null and !days.equals('')">
+		    ,	days = #{days}
+			</if>
+			<if test="stt_tm!=null and !stt_tm.equals('')">
+		    ,	stt_tm = TIME(#{stt_tm})
+			</if>
+			<if test="min_tm!=null and !min_tm.equals('')">
+		    ,	min_tm = #{min_tm}
+			</if>
+			<if test="bet_title!=null and !bet_title.equals('')">
+		    ,	bet_title = #{bet_title}
+			</if>
+			<if test="state!=null and !state.equals('')">
+		    ,	state = #{state}
+			</if>
+		</trim>
+		WHERE cno = #{cno}
+	</update>
+	
+</mapper>

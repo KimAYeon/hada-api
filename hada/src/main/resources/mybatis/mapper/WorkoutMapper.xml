@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hada.api.mapper.WorkoutMapper">
+
+	<select id="selectWorkoutList" parameterType="map" resultType="com.hada.api.model.Workout">
+		SELECT * FROM workout WHERE cno = #{cno} AND email = #{email}
+	</select>
+	
+	<insert id="insertWorkoutDetail" parameterType="com.hada.api.model.Workout">
+		INSERT INTO
+				workout
+		    SET
+				cno = #{cno}
+			,	email = #{email}
+		    ,	work_dt = str_to_date(#{work_dt}, '%Y-%m-%d')
+			,	work_th = 0
+		    , 	stt_tm = TIME(#{stt_tm})
+	</insert>
+	
+	<update id="updateWorkoutDetail" parameterType="map">
+		UPDATE 
+				workout
+		    SET
+				work_th = (select vv.th
+							from (
+								SELECT selected_date, weekday(selected_date) day, @rownum:=@rownum+1 th FROM 
+								 (SELECT ADDDATE('2015-07-01',t4*10000 + t3*1000 + t2*100 + t1*10 + t0) selected_date FROM
+								 (SELECT 0 t0 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t0,
+								 (SELECT 0 t1 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t1,
+								 (SELECT 0 t2 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t2,
+								 (SELECT 0 t3 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t3,
+								 (SELECT 0 t4 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t4) v1
+								WHERE selected_date BETWEEN #{challenge.stt_dt} AND #{challenge.end_dt}
+									AND LOCATE(weekday(selected_date), #{challenge.days})>0 AND (@rownum:=0)=0
+								ORDER BY selected_date DESC) vv
+							where vv.selected_date = #{workout.work_dt})
+		    ,	end_tm = TIME(#{workout.end_tm})
+		    ,	rate = ROUND((SELECT now FROM (SELECT COUNT(*) now FROM workout AS w WHERE w.cno=#{workout.cno} AND w.email=#{workout.email}) ww)/(SELECT COUNT(*) total FROM 
+								 (SELECT ADDDATE('2015-07-01',t41*10000 + t31*1000 + t21*100 + t11*10 + t01) selected_date1 FROM
+								 (SELECT 0 t01 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t01,
+								 (SELECT 0 t11 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t11,
+								 (SELECT 0 t21 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t21,
+								 (SELECT 0 t31 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t31,
+								 (SELECT 0 t41 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t41) v2
+								WHERE selected_date1 BETWEEN #{challenge.stt_dt} AND #{challenge.end_dt}
+									AND LOCATE(weekday(selected_date1), #{challenge.days})>0)*100)
+		    WHERE wno = #{workout.wno}
+	</update>
+	
+</mapper>

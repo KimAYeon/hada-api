@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hada.api.mapper.UserMapper">
+
+	<select id="selectUserList" parameterType="String" resultType="com.hada.api.model.User">
+		SELECT
+				email
+			,	gender
+			,	birth
+			,	nickname
+			,	created
+			,	updated
+		FROM user WHERE nickname LIKE CONCAT('%', #{nickname}, '%')
+	</select>
+	
+	<select id="selectUserCount" parameterType="com.hada.api.model.User" resultType="Integer">
+		SELECT COUNT(*) FROM user WHERE email = #{email} AND password = password(#{password})
+	</select>
+	
+	<insert id="insertUserDetail" parameterType="com.hada.api.model.User">
+		INSERT INTO
+				user
+		    SET
+				email = #{email}
+			,	gender = #{gender}
+		    ,	birth = #{birth}
+			,	nickname = #{nickname}
+		    ,	password = password(#{password})
+		    , 	created = now()
+	</insert>
+	
+	<update id="updateUserDetail" parameterType="com.hada.api.model.User">
+		UPDATE
+				user
+		<trim prefix="SET" prefixOverrides=",">
+		    <if test="nickname!=null and !nickname.equals('')">
+			,	nickname = #{nickname}
+			</if>
+			<if test="password!=null and !password.equals('')">
+		    ,	password = password(#{password})
+			</if>
+		</trim>
+			WHERE
+				email = #{email}
+	</update>
+	
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hada.api.mapper.VideoMapper">
+
+	<select id="selectVideoList" parameterType="Integer" resultType="com.hada.api.model.Video">
+		SELECT * FROM video WHERE cno = #{cno}
+	</select>
+	
+	<insert id="insertVideoUrl" parameterType="com.hada.api.model.Video">
+		INSERT INTO video
+			(cno, url)
+			VALUES
+			(#{cno}, #{url})
+	</insert>
+	
+	<delete id="deleteVideoUrl" parameterType="Integer">
+		DELETE FROM video
+			WHERE vno = #{vno}
+	</delete>
+	
+</mapper>
