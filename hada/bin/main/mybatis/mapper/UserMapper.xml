@@ -10,7 +10,21 @@
 			,	nickname
 			,	created
 			,	updated
-		FROM user WHERE nickname LIKE CONCAT('%', #{nickname}, '%')
+		FROM user 
+		WHERE nickname LIKE CONCAT('%', #{nickname}, '%')
+	</select>
+	
+	<select id="selectUserDetail" parameterType="String" resultType="com.hada.api.model.User">
+		SELECT
+				email
+			,	gender
+			,	birth
+			,	nickname
+			,	created
+			,	token
+			,	updated
+		FROM user 
+		WHERE email = #{email}
 	</select>
 	
 	<select id="selectUserCount" parameterType="com.hada.api.model.User" resultType="Integer">
@@ -27,6 +41,7 @@
 			,	nickname = #{nickname}
 		    ,	password = password(#{password})
 		    , 	created = now()
+		    ,	token = #{token}
 	</insert>
 	
 	<update id="updateUserDetail" parameterType="com.hada.api.model.User">
@@ -38,6 +53,10 @@
 			</if>
 			<if test="password!=null and !password.equals('')">
 		    ,	password = password(#{password})
+			</if>
+			
+			<if test="token!=null and !token.equals('')">
+		    ,	token = #{token}
 			</if>
 		</trim>
 			WHERE

@@ -24,6 +24,11 @@ public class UserRestController {
 		return userServiceImpl.selectUserList(nickname);
 	}
 	
+	@GetMapping("/getDetail")
+	public User getUserDetail(@RequestParam String email) {
+		return userServiceImpl.selectUserDetail(email);
+	}
+	
 	@PostMapping("/getCount")
 	public int getUserCount(@RequestBody User user) {
 		return userServiceImpl.selectUserCount(user);

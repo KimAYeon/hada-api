@@ -16,6 +16,10 @@ public class UserServiceImpl {
 		return userMapper.selectUserList(nickname);
 	}
 	
+	public User selectUserDetail(String email) {
+		return userMapper.selectUserDetail(email);
+	}
+	
 	public int selectUserCount(User user) {
 		return userMapper.selectUserCount(user);
 	}

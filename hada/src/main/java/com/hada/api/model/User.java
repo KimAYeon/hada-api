@@ -8,6 +8,7 @@ public class User {
 	private String birth;
 	private String nickname;
 	private String password;
+	private String token;
 	private Date created;
 	private Date updated;
 	
@@ -53,4 +54,11 @@ public class User {
 	public void setUpdated(Date updated) {
 		this.updated = updated;
 	}
+	public String getToken() {
+		return token;
+	}
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
 }

@@ -19,4 +19,6 @@ dependencies {
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.1'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	compile("org.mariadb.jdbc:mariadb-java-client")
+	//implementation 'com.google.firebase:firebase-admin-starter:6.5.0'
+	compile('org.json:json:20171018')
 }
