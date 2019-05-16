@@ -15,12 +15,8 @@ cache:
 script: "./gradlew clean build"
 
 # CI 실행 완료시 메일로 알람
-notifications:
-  email:
-    recipients:
-      - trinity20190601@gmail.com
-      - zetn333@gmail.com
-
-script : ' bundle exec rake spec '
-      
-before_install: gem install bundler
+#notifications:
+#  email:
+#    recipients:
+#      - trinity20190601@gmail.com
+#      - zetn333@gmail.com
