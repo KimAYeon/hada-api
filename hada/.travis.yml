@@ -20,6 +20,7 @@ notifications:
     recipients:
       - trinity20190601@gmail.com
       - zetn333@gmail.com
+
+script : ' bundle exec rake spec '
       
-before_install:
-  - gem install bundler
+before_install: gem install bundler
