@@ -19,3 +19,6 @@ notifications:
   email:
     recipients:
       - trinity20190601@gmail.com
+      
+before_install:
+  - gem install bundler
