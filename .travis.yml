@@ -18,8 +18,7 @@ before_install:
  - chmod +x gradlew
 
 # CI 실행 완료시 메일로 알람
-#notifications:
-#  email:
-#    recipients:
-#      - trinity20190601@gmail.com
-#      - zetn333@gmail.com
+notifications:
+  email:
+    recipients:
+      - trinity20190601@gmail.com
