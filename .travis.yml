@@ -33,5 +33,5 @@ deploy:
     acl: public_read
     wait-until-deployed: true
     on:
-      repo: KimAYeon/hada-api-server.git #Github 林家
+      repo: KimAYeon/hada-api-server #Github 林家
       branch: master
