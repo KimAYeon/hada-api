@@ -5,11 +5,13 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.hada.api.model.Challenge;
 import com.hada.api.model.Workout;
 
 @Mapper
 public interface WorkoutMapper {
-	public List<Workout> selectWorkoutList(Map<String, Object> map);
+	public List<Workout> selectWorkoutList(Map<String, Object> param);
+	public Workout selectWorkoutDetail(int wno);
 	public int insertWorkoutDetail(Workout Workout);
-	public int updateWorkoutDetail(Map<String, Object> map);
+	public int updateWorkoutDetail(Workout Workout);
 }

@@ -20,8 +20,8 @@ public class UserRestController {
 	@Autowired UserServiceImpl userServiceImpl;
 	
 	@GetMapping("/getList")
-	public List<User> getUserList(@RequestParam String nickname) {
-		return userServiceImpl.selectUserList(nickname);
+	public List<User> getUserList(@RequestParam String search) {
+		return userServiceImpl.selectUserList(search);
 	}
 	
 	@GetMapping("/getDetail")

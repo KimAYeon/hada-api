@@ -2,15 +2,45 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hada.api.mapper.ChallengeMapper">
 
-	<select id="selectChallengeList" parameterType="String" resultType="com.hada.api.model.Challenge">
-		SELECT * FROM challenge WHERE req_email = #{email} OR res_email = #{email}
+	<select id="selectChallengeList" parameterType="com.hada.api.model.Challenge" resultType="com.hada.api.model.Challenge">
+		SELECT 	* 
+		FROM 	challenge 
+		<where>
+			<if test="req_email!=null and !req_email.equals('')">
+			AND	req_email = #{req_email}
+			</if>
+			<if test="res_email!=null and !res_email.equals('')">
+		    AND	res_email = #{res_email}
+			</if>
+			<if test="stt_dt!=null and !stt_dt.equals('')">
+		    AND	stt_dt = STR_TO_DATE(#{stt_dt}, '%Y-%m-%d')
+			</if>
+			<if test="end_dt!=null and !end_dt.equals('')">
+		    AND	end_dt = STR_TO_DATE(#{end_dt}, '%Y-%m-%d')
+			</if>
+			<if test="days!=null and !days.equals('')">
+		    AND	days = #{days}
+			</if>
+			<if test="stt_tm!=null and !stt_tm.equals('')">
+		    AND	stt_tm = TIME(#{stt_tm})
+			</if>
+			<if test="min_mt!=null and !min_mt.equals('')">
+		    AND	min_mt = #{min_mt}
+			</if>
+			<if test="bet_title!=null and !bet_title.equals('')">
+		    AND	bet_title = #{bet_title}
+			</if>
+			<if test="state!=null and !state.equals('')">
+		    AND	state = #{state}
+			</if>
+		</where>
 	</select>
 	
 	<select id="selectChallengeDetail" parameterType="int" resultType="com.hada.api.model.Challenge">
 		SELECT * FROM challenge WHERE cno = #{cno}
 	</select>
 	
-	<insert id="insertChallengeDetail" parameterType="com.hada.api.model.Challenge">
+	<insert id="insertChallengeDetail" parameterType="com.hada.api.model.Challenge" useGeneratedKeys="true" keyProperty="cno">
 		INSERT INTO
 			challenge
 	    SET
@@ -20,9 +50,18 @@
 		,	end_dt = STR_TO_DATE(#{end_dt}, '%Y-%m-%d')
 	    ,	days = #{days}
 	    , 	stt_tm = TIME(#{stt_tm})
-	    ,	min_tm = #{min_tm}
+	    ,	min_mt = #{min_mt}
 	    ,	bet_title = #{bet_title}
 	    ,	state = #{state}
+	    ,	all_mt = (SELECT count(*)*#{min_mt} FROM 
+						 (SELECT ADDDATE('2019-01-01',t4*10000 + t3*1000 + t2*100 + t1*10 + t0) selected_date FROM
+						 (SELECT 0 t0 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t0,
+						 (SELECT 0 t1 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t1,
+						 (SELECT 0 t2 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t2,
+						 (SELECT 0 t3 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t3,
+						 (SELECT 0 t4 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t4) v1
+						WHERE selected_date BETWEEN #{stt_dt} AND #{end_dt}
+							AND LOCATE(weekday(selected_date),#{days})>0)
 	    ,	created = now()
 	</insert>
 	
@@ -47,8 +86,8 @@
 			<if test="stt_tm!=null and !stt_tm.equals('')">
 		    ,	stt_tm = TIME(#{stt_tm})
 			</if>
-			<if test="min_tm!=null and !min_tm.equals('')">
-		    ,	min_tm = #{min_tm}
+			<if test="min_mt!=null and !min_mt.equals('')">
+		    ,	min_mt = #{min_mt}
 			</if>
 			<if test="bet_title!=null and !bet_title.equals('')">
 		    ,	bet_title = #{bet_title}
@@ -56,8 +95,47 @@
 			<if test="state!=null and !state.equals('')">
 		    ,	state = #{state}
 			</if>
+			<if test="all_mt!=null and !all_mt.equals('')">
+		    ,	all_mt = #{all_mt}
+			</if>
+			<if test="acc_mt!=null and !acc_mt.equals('')">
+		    ,	acc_mt = #{acc_mt}
+		    ,	acc_rt = (SELECT ROUND(#{acc_mt}/all_mt*100) FROM challenge WHERE cno = #{cno})
+			</if>
 		</trim>
 		WHERE cno = #{cno}
 	</update>
+	
+	<update id="updateChallengeByWorkout" parameterType="com.hada.api.model.Workout">
+		UPDATE	challenge c
+		SET		acc_mt = c.acc_mt + #{work_mt}
+			,	acc_rt = #{rate}
+		WHERE	cno = #{cno}
+	</update>
+	
+	<delete id="deleteChallengeDetail" parameterType="Integer">
+		DELETE FROM challenge
+			WHERE cno = #{cno}
+	</delete>
+	
+	<select id="selectChallengeHistory" parameterType="com.hada.api.model.Challenge" resultType="map">
+	<![CDATA[
+		SELECT
+				*
+		FROM
+	        (SELECT challenge_dt, weekday(challenge_dt) work_day, @rownum:=@rownum+1 work_th FROM 
+			 (SELECT ADDDATE(#{stt_dt},t4*10000 + t3*1000 + t2*100 + t1*10 + t0) challenge_dt FROM
+			 (SELECT 0 t0 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t0,
+			 (SELECT 0 t1 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t1,
+			 (SELECT 0 t2 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t2,
+			 (SELECT 0 t3 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t3,
+			 (SELECT 0 t4 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t4) v1
+			WHERE challenge_dt BETWEEN #{stt_dt} AND IF(now()<#{end_dt}, now(), #{end_dt})
+				AND LOCATE(weekday(challenge_dt),#{days})>0 AND (@rownum:=0)=0) s
+	            LEFT OUTER JOIN
+	            (SELECT * FROM workout WHERE cno = #{cno}) w
+	            ON s.challenge_dt = w.work_dt
+	]]>
+	</select>
 	
 </mapper>

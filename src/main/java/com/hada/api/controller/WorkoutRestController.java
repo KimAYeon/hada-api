@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hada.api.model.Challenge;
 import com.hada.api.model.Workout;
+import com.hada.api.service.ChallengeServiceImpl;
 import com.hada.api.service.WorkoutServiceImpl;
 
 @RestController
@@ -23,26 +24,21 @@ import com.hada.api.service.WorkoutServiceImpl;
 public class WorkoutRestController {
 	@Autowired WorkoutServiceImpl WorkoutServiceImpl;
 	
-	@GetMapping("/getList")
-	public List<Workout> getWorkoutList(@RequestParam String email, int cno) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("email", email);
-		map.put("cno", cno);
-		
-		return WorkoutServiceImpl.selectWorkoutList(map);
-	}
-	
 	@PostMapping("/saveDetail")
 	public int saveWorkoutDetail(@RequestBody Workout workout) {
-		return WorkoutServiceImpl.insertWorkoutDetail(workout);
+		int result = WorkoutServiceImpl.insertWorkoutDetail(workout);
+		if(result > 0) {
+			return workout.getWno();
+		}
+		return 0;
 	}
 	
 	@PutMapping("/modifyDetail")
-	public int modifyWorkoutDetail(@RequestBody Map<String, Object> param) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("challenge", param.get("challenge"));
-		map.put("workout", param.get("workout"));
-		
-		return WorkoutServiceImpl.updateWorkoutDetail(map);
+	public int modifyWorkoutDetail(@RequestBody Workout workout) {
+		int result = WorkoutServiceImpl.updateWorkoutDetail(workout);
+		if(result > 0) {
+			return workout.getWno();
+		}
+		return 0;
 	}
 }

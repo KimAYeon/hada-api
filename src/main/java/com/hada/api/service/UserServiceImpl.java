@@ -12,8 +12,8 @@ import com.hada.api.model.User;
 public class UserServiceImpl {
 	@Autowired UserMapper userMapper;
 	
-	public List<User> selectUserList(String nickname) {
-		return userMapper.selectUserList(nickname);
+	public List<User> selectUserList(String search) {
+		return userMapper.selectUserList(search);
 	}
 	
 	public User selectUserDetail(String email) {

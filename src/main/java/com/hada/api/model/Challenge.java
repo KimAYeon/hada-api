@@ -10,11 +10,15 @@ public class Challenge {
 	private String end_dt;
 	private String days;
 	private String stt_tm;
-	private String min_tm;
+	private String min_mt;
 	private String bet_title;
 	private String state;
 	private Date created;
 	private Date updated;
+	// 19-06-27 Ãß°¡
+	private int all_mt;
+	private int acc_mt;
+	private int acc_rt;
 	
 	public int getCno() {
 		return cno;
@@ -58,11 +62,11 @@ public class Challenge {
 	public void setStt_tm(String stt_tm) {
 		this.stt_tm = stt_tm;
 	}
-	public String getMin_tm() {
-		return min_tm;
+	public String getMin_mt() {
+		return min_mt;
 	}
-	public void setMin_tm(String min_tm) {
-		this.min_tm = min_tm;
+	public void setMin_mt(String min_mt) {
+		this.min_mt = min_mt;
 	}
 	public String getBet_title() {
 		return bet_title;
@@ -88,5 +92,24 @@ public class Challenge {
 	public void setUpdated(Date updated) {
 		this.updated = updated;
 	}
+	public int getAll_mt() {
+		return all_mt;
+	}
+	public void setAll_mt(int all_mt) {
+		this.all_mt = all_mt;
+	}
+	public int getAcc_mt() {
+		return acc_mt;
+	}
+	public void setAcc_mt(int acc_mt) {
+		this.acc_mt = acc_mt;
+	}
+	public int getAcc_rt() {
+		return acc_rt;
+	}
+	public void setAcc_rt(int acc_rt) {
+		this.acc_rt = acc_rt;
+	}
+	
 }
 

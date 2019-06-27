@@ -11,7 +11,8 @@
 			,	created
 			,	updated
 		FROM user 
-		WHERE nickname LIKE CONCAT('%', #{nickname}, '%')
+		WHERE 	nickname LIKE CONCAT('%', #{search}, '%')
+		    OR	email LIKE CONCAT('%', #{search}, '%')
 	</select>
 	
 	<select id="selectUserDetail" parameterType="String" resultType="com.hada.api.model.User">

@@ -3,10 +3,20 @@
 <mapper namespace="com.hada.api.mapper.WorkoutMapper">
 
 	<select id="selectWorkoutList" parameterType="map" resultType="com.hada.api.model.Workout">
-		SELECT * FROM workout WHERE cno = #{cno} AND email = #{email}
+		SELECT	*
+		FROM	workout
+		WHERE	cno = #{cno}
+			AND	email = #{email}
+		ORDER BY wno DESC
 	</select>
 	
-	<insert id="insertWorkoutDetail" parameterType="com.hada.api.model.Workout">
+	<select id="selectWorkoutDetail" parameterType="int" resultType="com.hada.api.model.Workout">
+		SELECT	*
+		FROM	workout
+		WHERE	wno = #{wno}
+	</select>
+	
+	<insert id="insertWorkoutDetail" parameterType="com.hada.api.model.Workout" useGeneratedKeys="true" keyProperty="wno">
 		INSERT INTO
 				workout
 		    SET
@@ -17,8 +27,8 @@
 		    , 	stt_tm = TIME(#{stt_tm})
 	</insert>
 	
-	<update id="updateWorkoutDetail" parameterType="map">
-		UPDATE 
+	<update id="updateWorkoutDetail" parameterType="com.hada.api.model.Workout" useGeneratedKeys="true" keyProperty="wno">
+<!-- 		UPDATE 
 				workout
 		    SET
 				work_th = (select vv.th
@@ -44,7 +54,13 @@
 								 (SELECT 0 t41 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t41) v2
 								WHERE selected_date1 BETWEEN #{challenge.stt_dt} AND #{challenge.end_dt}
 									AND LOCATE(weekday(selected_date1), #{challenge.days})>0)*100)
-		    WHERE wno = #{workout.wno}
+		    WHERE wno = #{workout.wno} -->
+		    UPDATE	workout w
+			SET		w.work_dt = str_to_date(#{work_dt}, '%Y-%m-%d')
+				,	w.end_tm = TIME(#{end_tm})
+                ,	w.work_mt = ROUND(TIME_TO_SEC(TIMEDIFF(TIME(#{end_tm}),w.stt_tm))/60)
+				,	w.rate = (SELECT ROUND((ROUND(TIME_TO_SEC(TIMEDIFF(TIME(#{end_tm}),w.stt_tm))/60)+c.acc_mt)/c.all_mt*100) FROM challenge c WHERE c.cno = #{cno})
+			WHERE 	w.wno = #{wno}
 	</update>
 	
 </mapper>

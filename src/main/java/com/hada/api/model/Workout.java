@@ -7,7 +7,7 @@ public class Workout {
 	private int cno;
 	private String email;
 	private String work_dt;
-	private int work_th;
+	private int work_mt;
 	private String stt_tm;
 	private String end_tm;
 	private double rate;
@@ -36,11 +36,11 @@ public class Workout {
 	public void setWork_dt(String work_dt) {
 		this.work_dt = work_dt;
 	}
-	public int getWork_th() {
-		return work_th;
+	public int getWork_mt() {
+		return work_mt;
 	}
-	public void setWork_th(int work_th) {
-		this.work_th = work_th;
+	public void setWork_mt(int work_mt) {
+		this.work_mt = work_mt;
 	}
 	public String getStt_tm() {
 		return stt_tm;
