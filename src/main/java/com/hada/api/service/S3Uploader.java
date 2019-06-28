@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -25,7 +25,7 @@ import net.coobird.thumbnailator.Thumbnails;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
+@Service
 public class S3Uploader {
 	private final AmazonS3 amazonS3Client;
 	
@@ -37,12 +37,6 @@ public class S3Uploader {
 	
 	@Value("${cloud.aws.region.static}")
 	private String region;
-	
-	@Value("${cloud.aws.credentials.accessKey}")
-	private String accessKey;
-	
-	@Value("${cloud.aws.credentials.secretKey}")
-	private String secretKey;
 	
 	public String upload(MultipartFile multipartFile, String email) throws IOException {
         File uploadFile = convert(multipartFile)
