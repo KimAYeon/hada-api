@@ -8,6 +8,7 @@
 			,	gender
 			,	birth
 			,	nickname
+			,	profile
 			,	created
 			,	updated
 		FROM user 
@@ -21,6 +22,7 @@
 			,	gender
 			,	birth
 			,	nickname
+			,	profile
 			,	created
 			,	token
 			,	updated
@@ -43,6 +45,7 @@
 		    ,	password = password(#{password})
 		    , 	created = now()
 		    ,	token = #{token}
+		    ,	profile = #{profile}
 	</insert>
 	
 	<update id="updateUserDetail" parameterType="com.hada.api.model.User">
@@ -55,9 +58,11 @@
 			<if test="password!=null and !password.equals('')">
 		    ,	password = password(#{password})
 			</if>
-			
 			<if test="token!=null and !token.equals('')">
 		    ,	token = #{token}
+			</if>
+			<if test="profile!=null and !profile.equals('')">
+		    ,	profile = #{profile}
 			</if>
 		</trim>
 			WHERE

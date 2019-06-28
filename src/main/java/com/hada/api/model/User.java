@@ -11,6 +11,8 @@ public class User {
 	private String token;
 	private Date created;
 	private Date updated;
+	// 190628 Ãß°¡
+	private String profile;
 	
 	public String getEmail() {
 		return email;
@@ -59,6 +61,12 @@ public class User {
 	}
 	public void setToken(String token) {
 		this.token = token;
+	}
+	public String getProfile() {
+		return profile;
+	}
+	public void setProfile(String profile) {
+		this.profile = profile;
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import com.hada.api.mapper.UserMapper;
 import com.hada.api.model.User;
@@ -25,6 +26,9 @@ public class UserServiceImpl {
 	}
 	
 	public int insertUserDetail(User user) {
+		if(!ObjectUtils.isEmpty(selectUserDetail(user.getEmail()))) {
+			throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
+		}
 		return userMapper.insertUserDetail(user);
 	};
 	
