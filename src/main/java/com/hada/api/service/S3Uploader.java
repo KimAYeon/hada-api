@@ -48,7 +48,7 @@ public class S3Uploader {
     	String fileExt = FilenameUtils.getExtension(uploadFile.getName());
     	
 	    BufferedImage thumbnail = Thumbnails.of(uploadFile) 
-			.size(50, 50)
+			.size(128, 128)
 			.asBufferedImage();
 
 	    SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
