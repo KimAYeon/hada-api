@@ -17,8 +17,8 @@ public class Challenge {
 	private Date updated;
 	// 19-06-27 Ãß°¡
 	private int all_mt;
-	private int acc_mt;
-	private int acc_rt;
+	// 19-06-29
+	private String channel_id;
 	
 	public int getCno() {
 		return cno;
@@ -98,17 +98,11 @@ public class Challenge {
 	public void setAll_mt(int all_mt) {
 		this.all_mt = all_mt;
 	}
-	public int getAcc_mt() {
-		return acc_mt;
+	public String getChannel_id() {
+		return channel_id;
 	}
-	public void setAcc_mt(int acc_mt) {
-		this.acc_mt = acc_mt;
-	}
-	public int getAcc_rt() {
-		return acc_rt;
-	}
-	public void setAcc_rt(int acc_rt) {
-		this.acc_rt = acc_rt;
+	public void setChannel_id(String channel_id) {
+		this.channel_id = channel_id;
 	}
 	
 }

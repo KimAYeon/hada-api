@@ -22,6 +22,10 @@ public class WorkoutServiceImpl {
 		return workoutMapper.selectWorkoutDetail(wno);
 	}
 	
+	public Workout selectWorkoutLatest(Map<String, Object> param) {
+		return workoutMapper.selectWorkoutLatest(param);
+	}
+	
 	public int insertWorkoutDetail(Workout workout) {
 		return workoutMapper.insertWorkoutDetail(workout);
 	}

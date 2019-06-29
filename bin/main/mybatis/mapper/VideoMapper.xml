@@ -6,12 +6,20 @@
 		SELECT * FROM video WHERE cno = #{cno}
 	</select>
 	
-	<insert id="insertVideoUrl" parameterType="com.hada.api.model.Video">
+	<insert id="insertVideoUrl" parameterType="com.hada.api.model.Video" useGeneratedKeys="true" keyProperty="vno">
 		INSERT INTO 
 			video
 			SET
 				cno = #{cno}
+			<if test="url!=null and !url.equals('')">
 			,	url = #{url}
+			</if>
+			<if test="thumbnail!=null and !thumbnail.equals('')">
+			,	thumbnail = #{thumbnail}
+			</if>
+			<if test="title!=null and !title.equals('')">
+			,	title = #{title}
+			</if>
 	</insert>
 	
 	<delete id="deleteVideoUrl" parameterType="Integer">

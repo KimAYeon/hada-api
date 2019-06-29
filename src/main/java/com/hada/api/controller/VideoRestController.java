@@ -26,7 +26,11 @@ public class VideoRestController {
 	
 	@PostMapping("/saveUrl")
 	public int saveVideoUrl(@RequestBody Video video) {
-		return VideoServiceImpl.insertVideoUrl(video);
+		int result = VideoServiceImpl.insertVideoUrl(video);
+		if(result > 0) {
+			return video.getVno();
+		}
+		return 0;
 	}
 	
 	@DeleteMapping("/deleteUrl")

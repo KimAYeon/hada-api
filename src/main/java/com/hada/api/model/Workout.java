@@ -10,7 +10,6 @@ public class Workout {
 	private int work_mt;
 	private String stt_tm;
 	private String end_tm;
-	private double rate;
 	
 	public int getWno() {
 		return wno;
@@ -53,11 +52,5 @@ public class Workout {
 	}
 	public void setEnd_tm(String end_tm) {
 		this.end_tm = end_tm;
-	}
-	public double getRate() {
-		return rate;
-	}
-	public void setRate(double rate) {
-		this.rate = rate;
 	}
 }

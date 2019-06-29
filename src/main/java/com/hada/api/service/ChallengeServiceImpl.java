@@ -30,15 +30,11 @@ public class ChallengeServiceImpl {
 		return challengeMapper.updateChallengeDetail(challenge);
 	}
 	
-	public int updateChallengeByWorkout(Workout workout) {
-		return challengeMapper.updateChallengeByWorkout(workout);
-	}
-	
 	public int deleteChallengeDetail(int cno) {
 		return challengeMapper.deleteChallengeDetail(cno);
 	}
 	
-	public List<Map<String, Object>> selectChallengeHistory(Challenge challenge) {
-		return challengeMapper.selectChallengeHistory(challenge);
+	public List<Map<String, Object>> selectChallengeHistory(Map<String, Object> param) {
+		return challengeMapper.selectChallengeHistory(param);
 	}
 }

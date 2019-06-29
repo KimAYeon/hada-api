@@ -16,6 +16,14 @@
 		WHERE	wno = #{wno}
 	</select>
 	
+	<select id="selectWorkoutLatest" parameterType="map" resultType="com.hada.api.model.Workout">
+		SELECT	*
+		FROM	workout
+		WHERE	cno = #{cno} AND email = #{email}
+		ORDER BY work_dt DESC
+		LIMIT 1
+	</select>
+	
 	<insert id="insertWorkoutDetail" parameterType="com.hada.api.model.Workout" useGeneratedKeys="true" keyProperty="wno">
 		INSERT INTO
 				workout
@@ -55,12 +63,13 @@
 								WHERE selected_date1 BETWEEN #{challenge.stt_dt} AND #{challenge.end_dt}
 									AND LOCATE(weekday(selected_date1), #{challenge.days})>0)*100)
 		    WHERE wno = #{workout.wno} -->
-		    UPDATE	workout w
+		    UPDATE	workout w, workout ww
 			SET		w.work_dt = str_to_date(#{work_dt}, '%Y-%m-%d')
 				,	w.end_tm = TIME(#{end_tm})
                 ,	w.work_mt = ROUND(TIME_TO_SEC(TIMEDIFF(TIME(#{end_tm}),w.stt_tm))/60)
-				,	w.rate = (SELECT ROUND((ROUND(TIME_TO_SEC(TIMEDIFF(TIME(#{end_tm}),w.stt_tm))/60)+c.acc_mt)/c.all_mt*100) FROM challenge c WHERE c.cno = #{cno})
-			WHERE 	w.wno = #{wno}
+                ,	w.acc_mt = ROUND(TIME_TO_SEC(TIMEDIFF(TIME(#{end_tm}),w.stt_tm))/60)+ww.acc_mt
+				,	w.acc_rt = (SELECT ROUND((ROUND(TIME_TO_SEC(TIMEDIFF(TIME(#{end_tm}),w.stt_tm))/60)+ww.acc_mt)/c.all_mt*100) FROM challenge c WHERE c.cno = #{cno})
+			WHERE 	w.wno = #{wno} AND ww.wno = #{wno}-1
 	</update>
 	
 </mapper>

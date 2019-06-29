@@ -33,6 +33,9 @@
 			<if test="state!=null and !state.equals('')">
 		    AND	state = #{state}
 			</if>
+			<if test="channel_id!=null and !channel_id.equals('')">
+		    AND	channel_id = #{channel_id}
+			</if>
 		</where>
 	</select>
 	
@@ -63,6 +66,9 @@
 						WHERE selected_date BETWEEN #{stt_dt} AND #{end_dt}
 							AND LOCATE(weekday(selected_date),#{days})>0)
 	    ,	created = now()
+		<if test="channel_id!=null and !channel_id.equals('')">
+		,	channel_id = #{channel_id}
+		</if>
 	</insert>
 	
 	<update id="updateChallengeDetail" parameterType="com.hada.api.model.Challenge">
@@ -98,19 +104,11 @@
 			<if test="all_mt!=null and !all_mt.equals('')">
 		    ,	all_mt = #{all_mt}
 			</if>
-			<if test="acc_mt!=null and !acc_mt.equals('')">
-		    ,	acc_mt = #{acc_mt}
-		    ,	acc_rt = (SELECT ROUND(#{acc_mt}/all_mt*100) FROM challenge WHERE cno = #{cno})
+			<if test="channel_id!=null and !channel_id.equals('')">
+			,	channel_id = #{channel_id}
 			</if>
 		</trim>
 		WHERE cno = #{cno}
-	</update>
-	
-	<update id="updateChallengeByWorkout" parameterType="com.hada.api.model.Workout">
-		UPDATE	challenge c
-		SET		acc_mt = c.acc_mt + #{work_mt}
-			,	acc_rt = #{rate}
-		WHERE	cno = #{cno}
 	</update>
 	
 	<delete id="deleteChallengeDetail" parameterType="Integer">
@@ -118,22 +116,22 @@
 			WHERE cno = #{cno}
 	</delete>
 	
-	<select id="selectChallengeHistory" parameterType="com.hada.api.model.Challenge" resultType="map">
+	<select id="selectChallengeHistory" parameterType="map" resultType="map">
 	<![CDATA[
 		SELECT
 				*
 		FROM
 	        (SELECT challenge_dt, weekday(challenge_dt) work_day, @rownum:=@rownum+1 work_th FROM 
-			 (SELECT ADDDATE(#{stt_dt},t4*10000 + t3*1000 + t2*100 + t1*10 + t0) challenge_dt FROM
+			 (SELECT ADDDATE(#{challenge.stt_dt},t4*10000 + t3*1000 + t2*100 + t1*10 + t0) challenge_dt FROM
 			 (SELECT 0 t0 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t0,
 			 (SELECT 0 t1 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t1,
 			 (SELECT 0 t2 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t2,
 			 (SELECT 0 t3 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t3,
 			 (SELECT 0 t4 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t4) v1
-			WHERE challenge_dt BETWEEN #{stt_dt} AND IF(now()<#{end_dt}, now(), #{end_dt})
-				AND LOCATE(weekday(challenge_dt),#{days})>0 AND (@rownum:=0)=0) s
+			WHERE challenge_dt BETWEEN #{challenge.stt_dt} AND IF(now()<#{challenge.end_dt}, now(), #{challenge.end_dt})
+				AND LOCATE(weekday(challenge_dt),#{challenge.days})>0 AND (@rownum:=0)=0) s
 	            LEFT OUTER JOIN
-	            (SELECT * FROM workout WHERE cno = #{cno}) w
+	            (SELECT * FROM workout WHERE cno = #{challenge.cno} AND email = #{email}) w
 	            ON s.challenge_dt = w.work_dt
 	]]>
 	</select>

@@ -50,24 +50,16 @@ public class ChallengeRestController {
 		return challengeServiceImpl.updateChallengeDetail(challenge);
 	}
 	
-	@PutMapping("/modifyIntegratedData")
-	public int modifyChallengeIntegratedData(@RequestParam("cno") int cno, @RequestParam("email") String email) {
-		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("cno", cno);
-		param.put("email", email);
-		List<Workout> workoutList = WorkoutServiceImpl.selectWorkoutList(param);
-		
-		return challengeServiceImpl.updateChallengeByWorkout(workoutList.get(0));
-	}
-	
 	@DeleteMapping("/deleteDetail")
 	public int deleteChallengeDetail(@RequestParam int cno) {
 		return challengeServiceImpl.deleteChallengeDetail(cno);
 	}
 	
 	@GetMapping("/getHistory")
-	public List<Map<String, Object>> getWorkoutList(@RequestParam int cno) {
-		Challenge challenge = challengeServiceImpl.selectChallengeDetail(cno);
-		return challengeServiceImpl.selectChallengeHistory(challenge);
+	public List<Map<String, Object>> getWorkoutList(@RequestParam int cno, @RequestParam String email) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("challenge", challengeServiceImpl.selectChallengeDetail(cno));
+		param.put("email", email);
+		return challengeServiceImpl.selectChallengeHistory(param);
 	}
 }

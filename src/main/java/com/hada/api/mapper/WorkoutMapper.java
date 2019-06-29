@@ -12,6 +12,7 @@ import com.hada.api.model.Workout;
 public interface WorkoutMapper {
 	public List<Workout> selectWorkoutList(Map<String, Object> param);
 	public Workout selectWorkoutDetail(int wno);
+	public Workout selectWorkoutLatest(Map<String, Object> param);
 	public int insertWorkoutDetail(Workout Workout);
 	public int updateWorkoutDetail(Workout Workout);
 }

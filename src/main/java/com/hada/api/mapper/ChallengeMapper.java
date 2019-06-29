@@ -14,7 +14,6 @@ public interface ChallengeMapper {
 	public Challenge selectChallengeDetail(int cno);
 	public int insertChallengeDetail(Challenge challenge);
 	public int updateChallengeDetail(Challenge challenge);
-	public int updateChallengeByWorkout(Workout workout);
 	public int deleteChallengeDetail(int cno);
-	public List<Map<String, Object>> selectChallengeHistory(Challenge challenge);
+	public List<Map<String, Object>> selectChallengeHistory(Map<String, Object> param);
 }
