@@ -19,6 +19,7 @@ public class Challenge {
 	private int all_mt;
 	// 19-06-29
 	private String channel_id;
+	private int all_th;
 	
 	public int getCno() {
 		return cno;
@@ -103,6 +104,12 @@ public class Challenge {
 	}
 	public void setChannel_id(String channel_id) {
 		this.channel_id = channel_id;
+	}
+	public int getAll_th() {
+		return all_th;
+	}
+	public void setAll_th(int all_th) {
+		this.all_th = all_th;
 	}
 	
 }

@@ -10,6 +10,8 @@ public class Workout {
 	private int work_mt;
 	private String stt_tm;
 	private String end_tm;
+	// 19-06-29 Ãß°¡
+	private int work_th;
 	
 	public int getWno() {
 		return wno;
@@ -52,5 +54,11 @@ public class Workout {
 	}
 	public void setEnd_tm(String end_tm) {
 		this.end_tm = end_tm;
+	}
+	public int getWork_th() {
+		return work_th;
+	}
+	public void setWork_th(int work_th) {
+		this.work_th = work_th;
 	}
 }

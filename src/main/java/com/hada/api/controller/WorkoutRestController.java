@@ -24,6 +24,11 @@ import com.hada.api.service.WorkoutServiceImpl;
 public class WorkoutRestController {
 	@Autowired WorkoutServiceImpl WorkoutServiceImpl;
 	
+	@GetMapping("/getDetail")
+	public Workout getDetailLatest(@RequestParam int wno) {
+		return WorkoutServiceImpl.selectWorkoutDetail(wno);
+	}
+	
 	@GetMapping("/getDetailLatest")
 	public Workout getDetailLatest(@RequestParam int cno, @RequestParam String email) {
 		Map<String, Object> param = new HashMap<String, Object>();
