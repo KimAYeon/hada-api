@@ -7,10 +7,10 @@
 		FROM 	challenge 
 		<where>
 			<if test="req_email!=null and !req_email.equals('')">
-			AND	req_email = #{req_email}
+			OR	req_email = #{req_email}
 			</if>
 			<if test="res_email!=null and !res_email.equals('')">
-		    AND	res_email = #{res_email}
+		    OR	res_email = #{res_email}
 			</if>
 			<if test="stt_dt!=null and !stt_dt.equals('')">
 		    AND	stt_dt = STR_TO_DATE(#{stt_dt}, '%Y-%m-%d')
