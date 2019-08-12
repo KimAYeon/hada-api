@@ -62,7 +62,7 @@ public class S3Uploader {
         String uploadImageUrl = putS3(outputfile, fileName);
         
         removeNewFile(uploadFile);
-        removeNewFile(outputfile);
+        //removeNewFile(outputfile);
         
         return uploadImageUrl;
     }
