@@ -55,7 +55,7 @@ public class S3Uploader {
 	    SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
 	    String formatDate = format.format(new Date());
 	    
-	    File outputfile = new File(email + "_" + formatDate + "." + fileExt);
+	    File outputfile = new File("/root/app/git/" + email + "_" + formatDate + "." + fileExt);
 	    ImageIO.write(thumbnail, fileExt, outputfile);
 	    
         String fileName = directory + "/" + outputfile.getName();
