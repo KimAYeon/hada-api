@@ -27,6 +27,7 @@ import net.coobird.thumbnailator.Thumbnails;
 @RequiredArgsConstructor
 @Service
 public class S3Uploader {
+	
 	private final AmazonS3 amazonS3Client;
 	
 	@Value("${cloud.aws.s3.bucket}")
@@ -37,6 +38,7 @@ public class S3Uploader {
 	
 	@Value("${cloud.aws.region.static}")
 	private String region;
+	
 	
 	public String upload(MultipartFile multipartFile, String email) throws IOException {
         File uploadFile = convert(multipartFile)
