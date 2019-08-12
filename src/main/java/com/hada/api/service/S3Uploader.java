@@ -61,14 +61,14 @@ public class S3Uploader {
         String fileName = directory + "/" + outputfile.getName();
         String uploadImageUrl = putS3(outputfile, fileName);
         
-//        removeNewFile(uploadFile);
-//        removeNewFile(outputfile);
+        removeNewFile(uploadFile);
+        removeNewFile(outputfile);
         
         return uploadImageUrl;
     }
 
     private String putS3(File uploadFile, String fileName) {
-    	amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+    	amazonS3Client.putObject(new PutObjectRequest(bucket, uploadFile.getPath(), uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
