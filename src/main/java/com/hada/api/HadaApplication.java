@@ -1,10 +1,11 @@
 package com.hada.api;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.Configuration;
 
 @SpringBootApplication
+@Configuration
 public class HadaApplication {
 	
 	public static final String APPLICATION_LOCATIONS = "spring.config.location="
@@ -16,5 +17,5 @@ public class HadaApplication {
 			.properties(APPLICATION_LOCATIONS)
 			.run(args);
 	}
-
+	
 }

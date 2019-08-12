@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,16 +31,11 @@ public class UserRestController {
 	
 	@GetMapping("/getDetail")
 	public User getUserDetail(@RequestParam String email) {
-		User user = userServiceImpl.selectUserDetail(email);
-		
-		if(!ObjectUtils.isEmpty(user)) {
-			user.setPassword(null);
-		}
-		return user;
+		return userServiceImpl.selectUserDetail(email);
 	}
 	
 	@PostMapping("/getCount")
-	public User getUserCount(@RequestBody User user) {
+	public int getUserCount(@RequestBody User user) {
 		return userServiceImpl.selectUserCount(user);
 	}
 	
