@@ -11,6 +11,8 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,8 @@ import net.coobird.thumbnailator.Thumbnails;
 @RequiredArgsConstructor
 @Service
 public class S3Uploader {
+	
+	private static final Logger LOGGER = LogManager.getLogger(S3Uploader.class);
 	
 	private final AmazonS3 amazonS3Client;
 	
@@ -55,7 +59,11 @@ public class S3Uploader {
 	    SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
 	    String formatDate = format.format(new Date());
 	    
-	    File outputfile = new File("/root/app/git/" + email + "_" + formatDate + "." + fileExt);
+	    File outputfile = new File(email + "_" + formatDate + "." + fileExt);
+	    
+	    String path = System.getProperty("user.dir");
+	    LOGGER.info(path);
+	    
 	    ImageIO.write(thumbnail, fileExt, outputfile);
 	    
         String fileName = directory + "/" + outputfile.getName();
@@ -68,7 +76,7 @@ public class S3Uploader {
     }
 
     private String putS3(File uploadFile, String fileName) {
-    	amazonS3Client.putObject(new PutObjectRequest(bucket, uploadFile.getPath(), uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+    	amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
