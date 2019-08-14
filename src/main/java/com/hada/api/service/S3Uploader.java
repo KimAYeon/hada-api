@@ -44,7 +44,7 @@ public class S3Uploader {
 	private String region;
 	
 	public String upload(MultipartFile multipartFile, String email) throws IOException {
-        File uploadFile = convert(multipartFile)
+        File uploadFile = convert(multipartFile, email)
                 .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
         return upload(uploadFile, email);
     }
@@ -56,18 +56,18 @@ public class S3Uploader {
 			.size(128, 128)
 			.asBufferedImage();
 
-	    SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
-	    String formatDate = format.format(new Date());
-	    
-	    File outputfile = new File(email + "_" + formatDate + "." + fileExt);
+//	    SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
+//	    String formatDate = format.format(new Date());
+//	    
+//	    File outputfile = new File(email + "_" + formatDate + "." + fileExt);
 	    
 	    String path = System.getProperty("user.dir");
 	    LOGGER.info(path);
 	    
-	    ImageIO.write(thumbnail, fileExt, outputfile);
+	    ImageIO.write(thumbnail, fileExt, uploadFile);
 	    
-        String fileName = directory + "/" + outputfile.getName();
-        String uploadImageUrl = putS3(outputfile, fileName);
+        String fileName = directory + "/" + uploadFile.getName();
+        String uploadImageUrl = putS3(uploadFile, fileName);
         
         //removeNewFile(uploadFile);
         //removeNewFile(outputfile);
@@ -88,8 +88,14 @@ public class S3Uploader {
         }
     }
 
-    private Optional<File> convert(MultipartFile file) throws IOException {
-        File convertFile = new File(file.getOriginalFilename());
+    private Optional<File> convert(MultipartFile file, String email) throws IOException {
+    	String fileExt = FilenameUtils.getExtension(file.getOriginalFilename());
+    	SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
+	    String formatDate = format.format(new Date());
+	    
+	    File convertFile = new File(email + "_" + formatDate + "." + fileExt);
+    	
+        //File convertFile = new File(file.getOriginalFilename());
         FileOutputStream fos = null;
         
         try {
