@@ -34,9 +34,9 @@ public class UserRestController {
 		return userServiceImpl.selectUserDetail(email);
 	}
 	
-	@PostMapping("/getCount")
-	public int getUserCount(@RequestBody User user) {
-		return userServiceImpl.selectUserCount(user);
+	@PostMapping("/login")
+	public User getUserForLogin(@RequestBody User user) {
+		return userServiceImpl.selectUserForLogin(user);
 	}
 	
 	@PostMapping("/saveDetail")

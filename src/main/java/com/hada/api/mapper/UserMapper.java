@@ -10,7 +10,6 @@ import com.hada.api.model.User;
 public interface UserMapper {
 	public List<User> selectUserList(String search);
 	public User selectUserDetail(String email);
-	public int selectUserCount(User user);
 	public int insertUserDetail(User user);
 	public int updateUserDetail(User user);
 }
