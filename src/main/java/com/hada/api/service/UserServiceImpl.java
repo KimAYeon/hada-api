@@ -32,7 +32,7 @@ public class UserServiceImpl {
 		try {
 			targetPwd = EncryptUtil.decryptAES256(targetUser.getPassword());
 		} catch (Exception e) {
-			throw new HadaEncryptException("복호화를 실패하였습니다.", HadaApiErrorCode.FAIL_DECRYPT);
+			throw new HadaEncryptException("비밀번호 복호화를 실패하였습니다.", HadaApiErrorCode.FAIL_DECRYPT);
 		}
 		
 		if(!ObjectUtils.isEmpty(targetUser) && targetPwd.equals(user.getPassword())) {
@@ -51,7 +51,7 @@ public class UserServiceImpl {
 		try {
 			user.setPassword(EncryptUtil.encryptAES256(user.getPassword()));
 		} catch (Exception e) {
-			throw new HadaEncryptException("암호화를 실패하였습니다.", HadaApiErrorCode.FAIL_ENCRYPT);
+			throw new HadaEncryptException("비밀번호 암호화를 실패하였습니다.", HadaApiErrorCode.FAIL_ENCRYPT);
 		}
 		
 		return userMapper.insertUserDetail(user);
@@ -61,7 +61,7 @@ public class UserServiceImpl {
 		try {
 			user.setPassword(EncryptUtil.encryptAES256(user.getPassword()));
 		} catch (Exception e) {
-			throw new HadaEncryptException("암호화를 실패하였습니다.", HadaApiErrorCode.FAIL_ENCRYPT);
+			throw new HadaEncryptException("비밀번호 암호화를 실패하였습니다.", HadaApiErrorCode.FAIL_ENCRYPT);
 		}
 		
 		return userMapper.updateUserDetail(user);
