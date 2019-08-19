@@ -4,6 +4,9 @@ plugins {
 }
 
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'java'
+compileJava {options.encoding = "UTF-8"}
+compileTestJava {options.encoding = "UTF-8"}
 
 group = 'com.hada'
 version = '0.0.1-SNAPSHOT'
