@@ -32,7 +32,7 @@ public class UserServiceImpl {
 		try {
 			targetPwd = EncryptUtil.decryptAES256(targetUser.getPassword());
 		} catch (Exception e) {
-			throw new HadaEncryptException("ºñ¹Ğ¹øÈ£ º¹È£È­¸¦ ½ÇÆĞÇÏ¿´½À´Ï´Ù.", HadaApiErrorCode.FAIL_DECRYPT);
+			throw new HadaEncryptException("ë¹„ë°€ë²ˆí˜¸ ë³µí˜¸í™”ë¥¼ ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤...", HadaApiErrorCode.FAIL_DECRYPT);
 		}
 		
 		if(!ObjectUtils.isEmpty(targetUser) && targetPwd.equals(user.getPassword())) {
@@ -45,13 +45,13 @@ public class UserServiceImpl {
 	
 	public int insertUserDetail(User user) {
 		if(!ObjectUtils.isEmpty(selectUserDetail(user.getEmail()))) {
-			throw new HadaBadRequestException("ÀÌ¹Ì Á¸ÀçÇÏ´Â ÀÌ¸ŞÀÏ ÀÔ´Ï´Ù.", HadaApiErrorCode.EXISTED_EMAIL);
+			throw new HadaBadRequestException("ì´ë¯¸ ì¡´ì¬í•˜ëŠ” ì´ë©”ì¼ ì…ë‹ˆë‹¤.", HadaApiErrorCode.EXISTED_EMAIL);
 		}
 		
 		try {
 			user.setPassword(EncryptUtil.encryptAES256(user.getPassword()));
 		} catch (Exception e) {
-			throw new HadaEncryptException("ºñ¹Ğ¹øÈ£ ¾ÏÈ£È­¸¦ ½ÇÆĞÇÏ¿´½À´Ï´Ù.", HadaApiErrorCode.FAIL_ENCRYPT);
+			throw new HadaEncryptException("ë¹„ë°€ë²ˆí˜¸ ì•”í˜¸í™”ë¥¼ ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤...", HadaApiErrorCode.FAIL_ENCRYPT);
 		}
 		
 		return userMapper.insertUserDetail(user);
@@ -61,7 +61,7 @@ public class UserServiceImpl {
 		try {
 			user.setPassword(EncryptUtil.encryptAES256(user.getPassword()));
 		} catch (Exception e) {
-			throw new HadaEncryptException("ºñ¹Ğ¹øÈ£ ¾ÏÈ£È­¸¦ ½ÇÆĞÇÏ¿´½À´Ï´Ù.", HadaApiErrorCode.FAIL_ENCRYPT);
+			throw new HadaEncryptException("ë¹„ë°€ë²ˆí˜¸ ì•”í˜¸í™”ë¥¼ ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤...", HadaApiErrorCode.FAIL_ENCRYPT);
 		}
 		
 		return userMapper.updateUserDetail(user);
