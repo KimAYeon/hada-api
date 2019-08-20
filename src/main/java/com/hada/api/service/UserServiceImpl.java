@@ -45,7 +45,7 @@ public class UserServiceImpl {
 	
 	public int insertUserDetail(User user) {
 		if(!ObjectUtils.isEmpty(selectUserDetail(user.getEmail()))) {
-			throw new HadaBadRequestException("이미 존재하는 이메일 입니다.", HadaApiErrorCode.EXISTED_EMAIL);
+			throw new HadaBadRequestException("이미 존재하는 이메일 입니다...", HadaApiErrorCode.EXISTED_EMAIL);
 		}
 		
 		try {
