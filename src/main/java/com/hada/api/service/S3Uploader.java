@@ -1,9 +1,14 @@
 package com.hada.api.service;
 
+import java.awt.Graphics2D;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -15,11 +20,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.hada.api.exception.HadaApiErrorCode;
+import com.hada.api.exception.HadaApiException;
+import com.hada.api.exception.HadaUploadException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,84 +43,159 @@ import net.coobird.thumbnailator.Thumbnails;
 @RequiredArgsConstructor
 @Service
 public class S3Uploader {
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(S3Uploader.class);
-	
+
 	private final AmazonS3 amazonS3Client;
-	
+	private String fileExt = "";
+
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
-	
+
 	@Value("${cloud.aws.s3.bucket.directory}")
 	private String directory;
-	
+
 	@Value("${cloud.aws.region.static}")
 	private String region;
-	
-	public String upload(MultipartFile multipartFile, String email) throws IOException {
-        File uploadFile = convert(multipartFile, email)
-                .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File·Î ÀüÈ¯ÀÌ ½ÇÆĞÇß½À´Ï´Ù."));
-        return upload(uploadFile, email);
-    }
 
-    private String upload(File uploadFile, String email) throws IOException {
-    	String fileExt = FilenameUtils.getExtension(uploadFile.getName());
-    	
+	@Value("${hada.api.profile.resize}")
+	private int resize;
+
+	public String upload(MultipartFile multipartFile, String email) throws IOException {
+		fileExt = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+		
+		byte[] imgBytes = multipartFile.getBytes();
+		BufferedInputStream bufferedIS = new BufferedInputStream(new ByteArrayInputStream(imgBytes));
+		int orientation = getOrientation(bufferedIS);
+
+		ByteArrayInputStream byteIS = new ByteArrayInputStream(imgBytes);
+		BufferedImage buffredI = rotateImageForMobile(byteIS, orientation);
+
+//		File uploadFile = convert(multipartFile, email)
+//				.orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File ë³€í™˜ì— ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤."));
+		return upload(buffredI, email);
+	}
+
+	private String upload(BufferedImage uploadFile, String email) throws IOException {
+		int thumbnail_width = resize;
+		int thumbnail_height = resize;
+
+		double imgWidth = uploadFile.getWidth();
+		double imgHeight = uploadFile.getHeight();
+
+		if (imgWidth < imgHeight) {
+			thumbnail_width = (int) ((imgWidth / imgHeight) * resize);
+		} else {
+			thumbnail_height = (int) ((imgHeight / imgWidth) * resize);
+		}
+
+		int imgType = (uploadFile.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB
+				: BufferedImage.TYPE_INT_ARGB;
+
+//		BufferedImage thumbnail = new BufferedImage(thumbnail_width, thumbnail_height, imgType);
+//		Graphics2D graphic = thumbnail.createGraphics();
+//		graphic.drawImage(uploadFile, 0, 0, thumbnail_width, thumbnail_height, null);
+
 	    BufferedImage thumbnail = Thumbnails.of(uploadFile) 
-			.size(128, 128)
+			.size(thumbnail_width, thumbnail_height)
 			.asBufferedImage();
 
-//	    SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
-//	    String formatDate = format.format(new Date());
-//	    
-//	    File outputfile = new File(email + "_" + formatDate + "." + fileExt);
-	    
-	    String path = System.getProperty("user.dir");
-	    LOGGER.info(path);
-	    
-	    ImageIO.write(thumbnail, fileExt, uploadFile);
-	    
-        String fileName = directory + "/" + uploadFile.getName();
-        String uploadImageUrl = putS3(uploadFile, fileName);
-        
-        removeNewFile(uploadFile);
-        //removeNewFile(outputfile);
-        
-        return uploadImageUrl;
-    }
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
+		String formatDate = format.format(new Date());
+	    File outputfile = new File(email + "_" + formatDate + "." + fileExt);
 
-    private String putS3(File uploadFile, String fileName) {
-    	amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
-        return amazonS3Client.getUrl(bucket, fileName).toString();
-    }
+		ImageIO.write(thumbnail, fileExt, outputfile);
 
-    private void removeNewFile(File targetFile) {
-        if (targetFile.delete()) {
-            log.info("ÆÄÀÏÀÌ »èÁ¦µÇ¾ú½À´Ï´Ù.");
-        } else {
-            log.info("ÆÄÀÏÀÌ »èÁ¦µÇÁö ¸øÇß½À´Ï´Ù.");
-        }
-    }
+		String fileName = directory + "/" + outputfile.getName();
+		String uploadImageUrl = putS3(outputfile, fileName);
 
-    private Optional<File> convert(MultipartFile file, String email) throws IOException {
-    	String fileExt = FilenameUtils.getExtension(file.getOriginalFilename());
-    	SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
-	    String formatDate = format.format(new Date());
-	    
-	    File convertFile = new File(email + "_" + formatDate + "." + fileExt);
-    	
-        //File convertFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = null;
-        
-        try {
-            convertFile.createNewFile();
-            fos = new FileOutputStream(convertFile);
-            fos.write(file.getBytes());
-        } finally {
-            fos.close();
-        }
-        
-        return Optional.of(convertFile);
-    }
+		removeNewFile(outputfile);
+
+		return uploadImageUrl;
+	}
+
+	private String putS3(File uploadFile, String fileName) {
+		amazonS3Client.putObject(
+				new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+		return amazonS3Client.getUrl(bucket, fileName).toString();
+	}
+
+	private void removeNewFile(File targetFile) {
+		if (targetFile.delete()) {
+			log.info(targetFile.getName() + " íŒŒì¼ì„ ì‚­ì œí•˜ì˜€ìŠµë‹ˆë‹¤.");
+		} else {
+			log.info(targetFile.getName() + "íŒŒì¼ ì‚­ì œë¥¼ ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤.");
+		}
+	}
+
+	private Optional<File> convert(MultipartFile file, String email) throws IOException {
+		String fileExt = FilenameUtils.getExtension(file.getOriginalFilename());
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
+		String formatDate = format.format(new Date());
+
+		File convertFile = new File(email + "_" + formatDate + "." + fileExt);
+		FileOutputStream fos = null;
+
+		try {
+			convertFile.createNewFile();
+			fos = new FileOutputStream(convertFile);
+			fos.write(file.getBytes());
+		} finally {
+			fos.close();
+		}
+
+		return Optional.of(convertFile);
+	}
+
+	public int getOrientation(BufferedInputStream is) throws IOException {
+		int orientation = 1;
+		try {
+			Metadata metadata = ImageMetadataReader.readMetadata(is);
+			ExifIFD0Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+			if(!ObjectUtils.isEmpty(directory)) {
+				try {
+					orientation = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+				} catch (MetadataException me) {
+					throw new HadaUploadException("ì´ë¯¸ì§€ ê°ë„ë¥¼ ê°€ì ¸ì˜¬ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.", HadaApiErrorCode.NOT_GET_ORIENTATION);
+				}
+			}
+		} catch (ImageProcessingException e) {
+			throw new HadaUploadException("ì´ë¯¸ì§€ ì—…ë¡œë“œë¥¼ ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤..", HadaApiErrorCode.FAIL_UPLODAD_PROFILE);
+		}
+		return orientation;
+	}
+
+	public BufferedImage rotateImageForMobile(InputStream is, int orientation) throws IOException {
+		BufferedImage bi = ImageIO.read(is);
+		if (orientation == 6) { // ì •ìœ„ì¹˜
+			return rotateImage(bi, 90);
+		} else if (orientation == 1) { // ì™¼ìª½ìœ¼ë¡œ ëˆì˜€ì„ë•Œ
+			return bi;
+		} else if (orientation == 3) { // ì˜¤ë¥¸ìª½ìœ¼ë¡œ ëˆì˜€ì„ë•Œ
+			return rotateImage(bi, 180);
+		} else if (orientation == 8) { // 180ë„
+			return rotateImage(bi, 270);
+		} else {
+			return bi;
+		}
+	}
+
+	public BufferedImage rotateImage(BufferedImage orgImage, int radians) {
+		BufferedImage newImage;
+		if (radians == 90 || radians == 270) {
+			newImage = new BufferedImage(orgImage.getHeight(), orgImage.getWidth(), orgImage.getType());
+		} else if (radians == 180) {
+			newImage = new BufferedImage(orgImage.getWidth(), orgImage.getHeight(), orgImage.getType());
+		} else {
+			return orgImage;
+		}
+		Graphics2D graphics = (Graphics2D) newImage.getGraphics();
+		graphics.rotate(Math.toRadians(radians), newImage.getWidth() / 2, newImage.getHeight() / 2);
+		graphics.translate((newImage.getWidth() - orgImage.getWidth()) / 2,
+				(newImage.getHeight() - orgImage.getHeight()) / 2);
+		graphics.drawImage(orgImage, 0, 0, orgImage.getWidth(), orgImage.getHeight(), null);
+
+		return newImage;
+	}
 
 }

@@ -7,7 +7,7 @@ public class HadaBadRequestException extends RuntimeException {
 	public int httpStatus;
 	
 	public HadaBadRequestException() {
-        super("Àß¸øµÈ ¿äÃ»ÀÔ´Ï´Ù...");
+        super("ì˜ëª»ëœ ìš”ì²­ ê°’ì…ë‹ˆë‹¤...");
         this.httpStatus = HadaApiErrorCode.SC_BAD_REQUEST;
     }
 

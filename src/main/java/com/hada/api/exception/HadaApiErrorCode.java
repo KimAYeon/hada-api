@@ -8,7 +8,9 @@ public enum HadaApiErrorCode implements HttpStatus {
 	EXISTED_EMAIL(423),
 	INVALID_TOKEN(424),
 	FAIL_ENCRYPT(425),
-	FAIL_DECRYPT(426);
+	FAIL_DECRYPT(426),
+	FAIL_UPLODAD_PROFILE(427),
+	NOT_GET_ORIENTATION(428);
 
     private int code;
 

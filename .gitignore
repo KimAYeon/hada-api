@@ -4,6 +4,7 @@ HELP.md
 !gradle/wrapper/gradle-wrapper.jar
 
 aws.yml
+/bin/
 
 ### STS ###
 .apt_generated

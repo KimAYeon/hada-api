@@ -7,7 +7,7 @@ public class HadaTokenException extends RuntimeException {
 	public int httpStatus;
 	
 	public HadaTokenException() {
-        super("Àß¸øµÈ ÅäÅ« °ªÀÔ´Ï´Ù...");
+        super("ìœ íš¨í•˜ì§€ ì•Šì€ í† í° ê°’ì…ë‹ˆë‹¤...");
         this.httpStatus = HadaApiErrorCode.SC_INTERNAL_SERVER_ERROR;
     }
 

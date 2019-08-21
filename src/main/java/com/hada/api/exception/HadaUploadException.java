@@ -1,17 +1,17 @@
 package com.hada.api.exception;
 
-public class HadaEncryptException extends RuntimeException {
+public class HadaUploadException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1L;
 	
 	public int httpStatus;
 	
-	public HadaEncryptException() {
-        super("암호화/복호화를 실패하였습니다...");
+	public HadaUploadException() {
+        super("이미지 업로드를 실패하였습니다...");
         this.httpStatus = HadaApiErrorCode.SC_INTERNAL_SERVER_ERROR;
     }
 
-	public HadaEncryptException(String message, HadaApiErrorCode httpStatus) {
+	public HadaUploadException(String message, HadaApiErrorCode httpStatus) {
         super(message);
         this.httpStatus = httpStatus.getCode();
     }

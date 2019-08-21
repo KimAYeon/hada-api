@@ -34,16 +34,12 @@ dependencies {
     compile("org.springframework.cloud:spring-cloud-aws-autoconfigure:2.1.2.RELEASE")
     compile("commons-io:commons-io:2.4")
     compile group: 'net.coobird', name: 'thumbnailator', version: '0.4.8'
+    // https://mvnrepository.com/artifact/com.drewnoakes/metadata-extractor
+	compile group: 'com.drewnoakes', name: 'metadata-extractor', version: '2.11.0'
 }
 
 dependencyManagement {
     imports {
         mavenBom 'org.springframework.cloud:spring-cloud-aws:2.1.2.RELEASE'
     }
-}
-
-compileJava.options.encoding = 'UTF-8'
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
 }

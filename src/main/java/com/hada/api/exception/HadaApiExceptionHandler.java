@@ -1,10 +1,8 @@
 package com.hada.api.exception;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class HadaApiExceptionHandler {
@@ -30,10 +28,17 @@ public class HadaApiExceptionHandler {
 		return new HadaApiException(exception.getMessage(), exception.getHttpStatus());
 	}
 	
-	@ExceptionHandler(Exception.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ExceptionHandler(HadaUploadException.class)
+//	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
-	public HadaApiException handleException(Exception exception) {
-		return new HadaApiException(exception.getMessage(), 500);
+	public HadaApiException handleHadaUploadException(HadaUploadException exception) {
+		return new HadaApiException(exception.getMessage(), exception.getHttpStatus());
 	}
+	
+//	@ExceptionHandler(Exception.class)
+//	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//	@ResponseBody
+//	public HadaApiException handleException(Exception exception) {
+//		return new HadaApiException(exception.getMessage(), 500);
+//	}
 }
