@@ -18,6 +18,9 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -32,7 +35,6 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.hada.api.exception.HadaApiErrorCode;
-import com.hada.api.exception.HadaApiException;
 import com.hada.api.exception.HadaUploadException;
 
 import lombok.RequiredArgsConstructor;
@@ -61,19 +63,36 @@ public class S3Uploader {
 	@Value("${hada.api.profile.resize}")
 	private int resize;
 
-	public String upload(MultipartFile multipartFile, String email) throws IOException {
-		fileExt = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+	public JSONObject upload(MultipartFile multipartFile, String email) throws IOException {
+		fileExt = FilenameUtils.getExtension(multipartFile.getOriginalFilename());	// 파일 확장자
 		
 		byte[] imgBytes = multipartFile.getBytes();
 		BufferedInputStream bufferedIS = new BufferedInputStream(new ByteArrayInputStream(imgBytes));
 		int orientation = getOrientation(bufferedIS);
 
 		ByteArrayInputStream byteIS = new ByteArrayInputStream(imgBytes);
+		// 모바일 이미지 업로드 시, 가로/세로 모드에 따른 이미지 회전 문제 해결
 		BufferedImage buffredI = rotateImageForMobile(byteIS, orientation);
 
 //		File uploadFile = convert(multipartFile, email)
 //				.orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 변환에 실패하였습니다."));
-		return upload(buffredI, email);
+		
+		String uploadUrl = upload(buffredI, email);
+		
+		String jsonStr = "{\"profile\":\""+uploadUrl+"\"}";
+	
+		JSONParser parser = new JSONParser();
+		Object obj;
+		JSONObject jsonObj = null;
+		
+		try {
+			obj = parser.parse( jsonStr );
+			jsonObj = (JSONObject) obj;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return jsonObj;
 	}
 
 	private String upload(BufferedImage uploadFile, String email) throws IOException {
@@ -83,6 +102,7 @@ public class S3Uploader {
 		double imgWidth = uploadFile.getWidth();
 		double imgHeight = uploadFile.getHeight();
 
+		// 가로/세로 비율 유지
 		if (imgWidth < imgHeight) {
 			thumbnail_width = (int) ((imgWidth / imgHeight) * resize);
 		} else {
@@ -128,6 +148,7 @@ public class S3Uploader {
 		}
 	}
 
+	// MultipartFile -> File 변환
 	private Optional<File> convert(MultipartFile file, String email) throws IOException {
 		String fileExt = FilenameUtils.getExtension(file.getOriginalFilename());
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
@@ -169,9 +190,9 @@ public class S3Uploader {
 		BufferedImage bi = ImageIO.read(is);
 		if (orientation == 6) { // 정위치
 			return rotateImage(bi, 90);
-		} else if (orientation == 1) { // 왼쪽으로 눞였을때
+		} else if (orientation == 1) { // 왼쪽으로 눕혔을때
 			return bi;
-		} else if (orientation == 3) { // 오른쪽으로 눞였을때
+		} else if (orientation == 3) { // 오른쪽으로 눕혔을때
 			return rotateImage(bi, 180);
 		} else if (orientation == 8) { // 180도
 			return rotateImage(bi, 270);
